@@ -1,10 +1,10 @@
-import SignupPage from "./Pages/UserSide/SignupPage"
+import Body from "./Pages/Body"
 
 function App() {
 
   return (
     <>
-      <SignupPage/>
+      <Body/>
     </>
   )
 }

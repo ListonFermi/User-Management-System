@@ -1,8 +1,15 @@
 import axios from "axios";
 import { BACKEND_URL } from "../Utils/constants";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { ToastContainer, toast, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
+import Cookies from 'js-cookie';
 
 function SignupLoginForm() {
+  const navigate = useNavigate();
+  axios.defaults.withCredentials = false;
+
   type Inputs = {
     username: string;
     email: string;
@@ -18,21 +25,9 @@ function SignupLoginForm() {
     formState: { errors },
   } = useForm<Inputs>();
 
-  /*  async function submitHandler(event: React.SyntheticEvent) {
-    event.preventDefault();
-    console.log(event.target);
-    const formData = new FormData(event.currentTarget as HTMLFormElement);
-    console.log(formData);
-    const response = axios.post(`${BACKEND_URL}/user/signup`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    console.log(response);
-  } */
-
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     console.log(data);
+
     const response = await axios.post(
       `${BACKEND_URL}/user/signup`,
       JSON.stringify(data),
@@ -42,11 +37,33 @@ function SignupLoginForm() {
         },
       }
     );
-    console.log(response)
+    console.log(response);
+
+    if (response.data?.success) {
+      const jwtToken = Cookies.get('userJWT');
+      console.log(document.cookie)
+    
+    // Now you can use the JWT token as needed
+    console.log('JWT token:', jwtToken);
+      navigate("/user/home");
+    } else {
+      toast.error(response.data.message, {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: Bounce,
+      });
+    }
   };
 
   return (
     <>
+      <ToastContainer />
       <form className="flex flex-col w-64" onSubmit={handleSubmit(onSubmit)}>
         <label htmlFor="username">
           Username:
