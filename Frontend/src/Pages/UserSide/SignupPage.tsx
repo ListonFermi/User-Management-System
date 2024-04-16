@@ -1,11 +1,12 @@
+import { Navigate } from 'react-router-dom';
 import SignupLoginForm from '../../Components/SignupLoginForm'
+import { verifyUserJWT } from '../../Utils/verifyUserJWT';
 
 function SignupPage() {
-  return (
-    <div className='flex justify-center align-middle'>
-      <SignupLoginForm/>
-    </div>
-  )
+
+  const userLogged = verifyUserJWT();
+
+  return userLogged ? <Navigate to="/user/home" /> : <SignupLoginForm />;
 }
 
 export default SignupPage

@@ -4,11 +4,9 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { ToastContainer, toast, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
-import Cookies from 'js-cookie';
 
 function SignupLoginForm() {
   const navigate = useNavigate();
-  axios.defaults.withCredentials = false;
 
   type Inputs = {
     username: string;
@@ -26,26 +24,24 @@ function SignupLoginForm() {
   } = useForm<Inputs>();
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    console.log(data);
-
-    const response = await axios.post(
-      `${BACKEND_URL}/user/signup`,
-      JSON.stringify(data),
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    console.log(response);
+    const response = await axios.post(`${BACKEND_URL}/user/signup`, data);
 
     if (response.data?.success) {
-      const jwtToken = Cookies.get('userJWT');
-      console.log(document.cookie)
-    
-    // Now you can use the JWT token as needed
-    console.log('JWT token:', jwtToken);
-      navigate("/user/home");
+      localStorage.setItem("userJWT", response.data.userJWT);
+
+      toast.success("New user registered successfully", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: Bounce,
+      });
+
+      setTimeout(() => navigate("/user/home"), 1500);
     } else {
       toast.error(response.data.message, {
         position: "top-center",

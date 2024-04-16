@@ -1,31 +1,43 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import SignupPage from "./UserSide/SignupPage";
 import HomePage from "./UserSide/HomePage";
 import LoginPage from "./UserSide/LoginPage";
+import ProtectedUserRoute from "../Components/ProtectedUserRoute";
+import SignupPage from "./UserSide/SignupPage";
 import AdminLoginPage from "./AdminSide/AdminLoginPage";
 import AdminDashboardPage from "./AdminSide/AdminDashboardPage";
+import ProtectedAdminRoute from "../Components/ProtectedAdminRoute";
 
 function Body() {
   const appRouter = createBrowserRouter([
+    //User Routes:
     {
       path: "/",
-      element: <LoginPage />, //user signup
+      element: <LoginPage />,
     },
     {
       path: "/signup",
-      element: <SignupPage />, //user signup
+      element: <SignupPage />,
     },
     {
       path: "/user/home",
-      element: <HomePage />,
+      element: (
+        <ProtectedUserRoute>
+          <HomePage />
+        </ProtectedUserRoute>
+      ),
     },
+    //Admin Routes:
     {
-      path: "/admin/login",
+      path: "/admin",
       element: <AdminLoginPage />,
     },
     {
       path: "/admin/dashboard",
-      element: <AdminDashboardPage />,
+      element: (
+        <ProtectedAdminRoute>
+          <AdminDashboardPage />
+        </ProtectedAdminRoute>
+      ),
     },
   ]);
 
@@ -36,4 +48,5 @@ function Body() {
   );
 }
 
+// Export the Body component
 export default Body;

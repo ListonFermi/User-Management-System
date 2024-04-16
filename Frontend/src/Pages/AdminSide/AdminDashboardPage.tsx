@@ -1,4 +1,3 @@
-import React from 'react'
 import AdminNavbar from '../../Components/AdminNavbar'
 import AdminTable from '../../Components/AdminTable'
 

@@ -1,7 +1,15 @@
 import { useForm, SubmitHandler } from "react-hook-form";
-import { ToastContainer } from "react-toastify";
+import { Bounce, ToastContainer, toast } from "react-toastify";
+import { BACKEND_URL } from "../Utils/constants";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { loginUser } from "../Utils/userSlice";
 
 function LoginForm() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   type Inputs = {
     email: string;
     password: string;
@@ -13,7 +21,44 @@ function LoginForm() {
     formState: { errors },
   } = useForm<Inputs>();
 
-  const onSubmit: SubmitHandler<Inputs> = async (data) => {};
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    try {
+      const response = await axios.post(`${BACKEND_URL}/user/login`, data);
+
+      if (response.data?.success) {
+        localStorage.setItem("userJWT", response?.data?.userJWT);
+
+        toast.success("Logged in successfully", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+          transition: Bounce,
+        });
+
+        dispatch(loginUser());
+
+        setTimeout(() => navigate("/user/home"), 1500);
+      }
+    } catch (error: any) {
+      console.log(error);
+      toast.error(error.response.data.message, {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: Bounce,
+      });
+    }
+  };
 
   return (
     <div>
@@ -50,6 +95,9 @@ function LoginForm() {
           />
           <p className="text-red-600">{errors.password?.message}</p>
         </label>
+        <button className="border-2 p-2 m-2" type="submit">
+          Sign In
+        </button>
       </form>
     </div>
   );

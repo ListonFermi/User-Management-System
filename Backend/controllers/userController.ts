@@ -3,6 +3,12 @@ import { signupValidator } from "../helpers/formValidations";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
+type DecodedJWT = {
+  email: string;
+  iat: number;
+  exp: number;
+};
+
 export default {
   signupPost: async (req: any, res: any) => {
     try {
@@ -13,10 +19,11 @@ export default {
 
       //Inserting the data to postgresql
       const { username, email, phone, password } = req.body;
-      const encryptedPassword = bcrypt.hashSync(password, 10);
-      const query = `INSERT INTO users (username, email, phone, password) 
-        VALUES ($1, $2, $3, $4)`;
+      
       try {
+        const encryptedPassword = bcrypt.hashSync(password, 10);
+        const query = `INSERT INTO users (username, email, phone, password) 
+          VALUES ($1, $2, $3, $4)`;
         await client.query(query, [username, email, phone, encryptedPassword]);
       } catch (error: any) {
         if (error.code === "23505") {
@@ -26,19 +33,74 @@ export default {
         }
       }
 
-      //Creating a JWT token and storing it in the cookies
-      const userJWT = jwt.sign({email}, String(process.env.JWT_KEY), {
-        expiresIn: '1h',
+      //Creating a JWT token and sending it in the body
+      const userJWT = jwt.sign({ email }, String(process.env.JWT_KEY), {
+        expiresIn: "1h",
       });
-      res.cookie("userJWT", userJWT,{maxAge: 60*60*1000, domain: process.env.FRONTEND_URL,
-      path: '/',
-      secure: true,
-      httpOnly: true,
-      sameSite: 'none' });
-
-      return res.status(200).send({ success: true });
+      return res.status(200).send({ success: true, userJWT });
     } catch (error) {
       console.log(error);
+    }
+  },
+  loginPost: async (req: any, res: any) => {
+    try {
+      const { email, password } = req.body;
+
+      const query = `SELECT email, password FROM users WHERE email = $1`;
+      const result = await client.query(query, [email]);
+
+      if (!result.rows.length) {
+        // User not found
+        return res
+          .status(401)
+          .send({ success: false, message: "Invalid email or password" });
+      }
+
+      const user = result.rows[0];
+      const passwordMatch = await bcrypt.compare(password, user.password);
+
+      if (!passwordMatch) {
+        // Incorrect password
+        return res
+          .status(401)
+          .send({ success: false, message: "Invalid email or password" });
+      }
+
+      // Password is correct
+      //Creating a JWT token and sending it in the body
+      const userJWT = jwt.sign({ email }, String(process.env.JWT_KEY), {
+        expiresIn: "1h",
+      });
+      res.status(200).send({ success: true, message: "Login successful", userJWT });
+    } catch (error) {
+      console.error("Error during login:", error);
+      res
+        .status(500)
+        .send({ success: false, message: "Internal server error" });
+    }
+  },
+  verifyUser: async (req: any, res: any) => {
+    try {
+      const { userJWT } = req.body;
+      const verifyJWT = jwt.verify(
+        userJWT,
+        String(process.env.JWT_KEY)
+      ) as DecodedJWT;
+
+      // if (verifyJWT.email !== process.env.ADMIN_EMAIL) {
+      //   return res
+      //     .status(401)
+      //     .send({ success: false, message: "User JWT failed to veify" });
+      // }
+      return res
+        .status(200)
+        .send({ success: true, message: "User JWT verified successfully" });
+    } catch (error: any) {
+      if (error?.message === "invalid signature") {
+        res
+          .status(401)
+          .send({ success: false, message: "User JWT failed to veify" });
+      }
     }
   },
 };

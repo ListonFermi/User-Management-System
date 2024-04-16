@@ -1,11 +1,11 @@
-import LoginForm from "../../Components/LoginForm"
+import { Navigate } from "react-router-dom";
+import LoginForm from "../../Components/LoginForm";
+import { verifyUserJWT } from "../../Utils/verifyUserJWT";
 
 function LoginPage() {
-  return (
-    <div>
-      <LoginForm/>
-    </div>
-  )
+  const userLogged = verifyUserJWT();
+
+  return userLogged ? <Navigate to="/user/home" /> : <LoginForm />;
 }
 
-export default LoginPage
+export default LoginPage;
