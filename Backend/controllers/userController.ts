@@ -19,7 +19,7 @@ export default {
 
       //Inserting the data to postgresql
       const { username, email, phone, password } = req.body;
-      
+
       try {
         const encryptedPassword = bcrypt.hashSync(password, 10);
         const query = `INSERT INTO users (username, email, phone, password) 
@@ -71,7 +71,9 @@ export default {
       const userJWT = jwt.sign({ email }, String(process.env.JWT_KEY), {
         expiresIn: "1h",
       });
-      res.status(200).send({ success: true, message: "Login successful", userJWT });
+      res
+        .status(200)
+        .send({ success: true, message: "Login successful", userJWT });
     } catch (error) {
       console.error("Error during login:", error);
       res
@@ -101,6 +103,43 @@ export default {
           .status(401)
           .send({ success: false, message: "User JWT failed to veify" });
       }
+    }
+  },
+  uploadImage: async (req: any, res: any) => {
+    try {
+      console.log(req.file.filename);
+
+      const { userJWT } = req.body;
+
+      const { email } = jwt.verify(
+        userJWT,
+        String(process.env.JWT_KEY)
+      ) as DecodedJWT;
+
+      const query = `UPDATE users SET image = $1 WHERE email = $2`;
+      await client.query(query, [req.file.filename, email]);
+
+      res.status(200).send({ success: true });
+    } catch (error: any) {
+      console.log(error);
+    }
+  },
+  fetchUserData: async (req: any, res: any) => {
+    try {
+      const { userJWT } = req.body;
+
+      const { email } = jwt.verify(
+        userJWT,
+        String(process.env.JWT_KEY)
+      ) as DecodedJWT;
+
+      const query = `SELECT username,email,phone,image FROM users WHERE email=$1`;
+      const result = await client.query(query, [email]);
+      const userData = result.rows[0];
+
+      res.status(200).send({ success: true, userData });
+    } catch (error) {
+      console.log(error);
     }
   },
 };

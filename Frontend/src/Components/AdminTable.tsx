@@ -14,8 +14,6 @@ function AdminTable() {
   const [data, setData] = useState<DataType[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  
-
   useEffect(() => {
     console.log('came hereee')
     const fetchData = async () => {

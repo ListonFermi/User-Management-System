@@ -7,11 +7,6 @@ function HomePage() {
     <>
     <ToastContainer />
       <UserNavbar/>
-      <div className="flex justify-center align-top">
-        <h1 className="text-black font-bold mt-12 text-3xl">
-          Welcome, {"user"}
-        </h1>
-      </div>
       <div>
         <UserCard />
       </div>
