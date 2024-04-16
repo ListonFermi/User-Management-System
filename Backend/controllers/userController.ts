@@ -22,6 +22,7 @@ export default {
 
       try {
         const encryptedPassword = bcrypt.hashSync(password, 10);
+        // await client.connect();
         const query = `INSERT INTO users (username, email, phone, password) 
           VALUES ($1, $2, $3, $4)`;
         await client.query(query, [username, email, phone, encryptedPassword]);
@@ -32,6 +33,9 @@ export default {
             .send({ success: false, message: "Credentials already exists" });
         }
       }
+      // finally{
+      //   await client.end();
+      // }
 
       //Creating a JWT token and sending it in the body
       const userJWT = jwt.sign({ email }, String(process.env.JWT_KEY), {
@@ -46,6 +50,7 @@ export default {
     try {
       const { email, password } = req.body;
 
+      // await client.connect();
       const query = `SELECT email, password FROM users WHERE email = $1`;
       const result = await client.query(query, [email]);
 
@@ -80,6 +85,9 @@ export default {
         .status(500)
         .send({ success: false, message: "Internal server error" });
     }
+    // finally{
+    //   await client.end();
+    // }
   },
   verifyUser: async (req: any, res: any) => {
     try {
@@ -89,11 +97,6 @@ export default {
         String(process.env.JWT_KEY)
       ) as DecodedJWT;
 
-      // if (verifyJWT.email !== process.env.ADMIN_EMAIL) {
-      //   return res
-      //     .status(401)
-      //     .send({ success: false, message: "User JWT failed to veify" });
-      // }
       return res
         .status(200)
         .send({ success: true, message: "User JWT verified successfully" });
@@ -115,7 +118,8 @@ export default {
         userJWT,
         String(process.env.JWT_KEY)
       ) as DecodedJWT;
-
+      
+      // await client.connect();
       const query = `UPDATE users SET image = $1 WHERE email = $2`;
       await client.query(query, [req.file.filename, email]);
 
@@ -123,6 +127,9 @@ export default {
     } catch (error: any) {
       console.log(error);
     }
+    // finally{
+    //   await client.end();
+    // }
   },
   fetchUserData: async (req: any, res: any) => {
     try {
@@ -133,6 +140,7 @@ export default {
         String(process.env.JWT_KEY)
       ) as DecodedJWT;
 
+      // await client.connect();
       const query = `SELECT username,email,phone,image FROM users WHERE email=$1`;
       const result = await client.query(query, [email]);
       const userData = result.rows[0];
@@ -141,5 +149,8 @@ export default {
     } catch (error) {
       console.log(error);
     }
+    // finally{
+    //   await client.end();
+    // }
   },
 };

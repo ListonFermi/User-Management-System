@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { BACKEND_URL } from "../Utils/constants";
+import { useNavigate } from "react-router-dom";
 
 type DataType = {
   id: string;
@@ -44,6 +45,11 @@ function AdminTable() {
     fetchData();
   }, []);
 
+  // function editHandler(userId : string){
+    const navigate = useNavigate()
+    
+  // }
+
   return (
     <div className="flex align-middle justify-center m-6">
       {loading ? (
@@ -68,8 +74,10 @@ function AdminTable() {
                   <td>{user.email}</td>
                   <td>{user.phone}</td>
                   <td>
-                    <button>Edit</button>
-                    <button>Del</button>
+                    <button onClick={()=>{
+                      navigate(`/admin/edit`, {state: user })      
+                      }}>📝Edit</button>
+                    <button>🗑️Delete</button>
                   </td>
                 </tr>
               ))}

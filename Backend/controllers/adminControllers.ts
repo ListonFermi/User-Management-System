@@ -40,6 +40,7 @@ export default {
   adminDashboardData: async (req: any, res: any) => {
     try {
       //grabing all user data from db
+      // await client.connect();
       const query = `SELECT id,username,email,phone FROM users`;
       const dashboardData: { rows: Row[] } = await client.query(query);
 
@@ -51,6 +52,9 @@ export default {
         .status(500)
         .send({ success: false, message: "Failed to fetch data from db" });
     }
+    // finally{
+    //   await client.end();
+    // }
   },
   verifyAdmin: async (req: any, res: any) => {
     try {
@@ -76,4 +80,22 @@ export default {
       }
     }
   },
+  editUser: async (req: any, res: any) => {
+    try {
+      const {id} = req.params
+      const { username, email, phone } = req.body;
+
+      // await client.connect();
+      const query = `UPDATE users SET username= $1 , email = $2, phone = $3 WHERE id = $4`
+      await client.query(query,[username, email, phone, id])
+
+      res.status(200).send({success: true})
+
+    } catch (error) {
+        console.log(error)
+    }
+    // finally{
+    //   await client.end();
+    // }
+  }
 };
