@@ -82,7 +82,7 @@ function AdminTable() {
   }
 
   return (
-    <>
+    <div className="flex flex-col items-center">
       <ToastContainer />
       <button
         className="p-2 m-2 bg-lime-400 rounded"
@@ -132,7 +132,7 @@ function AdminTable() {
           <p>No data available</p>
         )}
       </div>
-    </>
+    </div>
   );
 }
 

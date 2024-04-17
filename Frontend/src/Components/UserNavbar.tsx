@@ -10,9 +10,9 @@ function UserNavbar() {
       event.preventDefault();
       localStorage.removeItem("userJWT");
 
-      toast.success("Logging out", {
+      toast.loading("Logging out", {
         position: "top-center",
-        autoClose: 3000,
+        autoClose: 2000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,

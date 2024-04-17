@@ -67,11 +67,11 @@ function LoginForm() {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen">
+    <div className="flex justify-center items-center h-screen ">
       <div className="max-w-xl w-full">
         <ToastContainer />
         <form
-          className="bg-gray-200 p-6 rounded-lg shadow-lg flex flex-col justify-center items-center"
+          className="bg-gray-200 p-6 rounded-lg shadow-lg shadow-black flex flex-col justify-center items-center"
           onSubmit={handleSubmit(onSubmit)}
         >
           <h1 className="font-bold text-3xl">Login</h1>
