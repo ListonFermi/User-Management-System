@@ -1,28 +1,14 @@
 import { Client } from "pg";
+import dotenv from "dotenv";
 
-// export const client = new Client({
-//   host: process.env.POSTGRES_HOST,
-//   port: Number(process.env.POSTGRES_PORT),
-//   database: process.env.POSTGRES_DATABASE,
-//   user: process.env.POSTGRES_USER,
-//   password: String(process.env.POSTGRES_PASSWORD),
-// });
-
+dotenv.config();
 
 export const client = new Client({
-    host: "satao.db.elephantsql.com",
-    port: 5432,
-    database: "ijgxkxzp",
-    user: "ijgxkxzp",
-    password: 'TpM9MzDUSM0hyq9dietKjSk004B5Td2X' ,
-  });
+  host: process.env.POSTGRES_HOST,
+  port: 5432,
+  database: process.env.POSTGRES_DATABASE,
+  user: process.env.POSTGRES_USER,
+  password: process.env.POSTGRES_PASSWORD,
+});
 
-
-
-// //   satao.db.elephantsql.com
-// POSTGRES_PORT = 5432
-// POSTGRES_DATABASE = ijgxkxzp
-// POSTGRES_USER = ijgxkxzp
-// POSTGRES_PASSWORD = 'TpM9MzDUSM0hyq9dietKjSk004B5Td2X'
-
-export default async ()=>await client.connect()
+export default async () => await client.connect();

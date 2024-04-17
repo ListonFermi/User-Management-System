@@ -1,7 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
 import userRouter from "./routes/userRoutes";
-import path from 'path'
 import dbConnect from "./config/dbConnect";
 import cookieParser from "cookie-parser"
 import adminRouter from "./routes/adminRoutes";
@@ -10,7 +9,7 @@ import cors from 'cors'
 
 const app = express();
 dotenv.config();
-dbConnect()
+dbConnect().then(()=>console.log('ElephantSQL connected succesfully'))
 
 app.use(cors());
 // const allowCrossDomain = (req: any, res: any, next: any) => {
@@ -30,7 +29,7 @@ app.use(express.static("public"));
 app.use("/user", userRouter);
 app.use("/admin", adminRouter);
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () =>
   console.log(`Server started running in http://localhost:${PORT}/`)
 );
