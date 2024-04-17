@@ -1,5 +1,7 @@
 import jwt from "jsonwebtoken";
 import { client } from "../config/dbConnect";
+import { signupValidator } from "../helpers/formValidations";
+import bcrypt from "bcryptjs";
 
 type DecodedJWT = {
   email: string;
@@ -82,20 +84,59 @@ export default {
   },
   editUser: async (req: any, res: any) => {
     try {
-      const {id} = req.params
+      const { id } = req.params;
       const { username, email, phone } = req.body;
 
       // await client.connect();
-      const query = `UPDATE users SET username= $1 , email = $2, phone = $3 WHERE id = $4`
-      await client.query(query,[username, email, phone, id])
+      const query = `UPDATE users SET username= $1 , email = $2, phone = $3 WHERE id = $4`;
+      await client.query(query, [username, email, phone, id]);
 
-      res.status(200).send({success: true})
-
-    } catch (error) {
-        console.log(error)
+      res.status(200).send({ success: true });
+    } catch (error: any) {
+      console.log(error);
+      if (error.code === "23505") {
+        return res
+          .status(208)
+          .send({ success: false, message: "Credentials already exists" });
+      }
     }
     // finally{
     //   await client.end();
     // }
-  }
+  },
+  addUser: async (req: any, res: any) => {
+    try {
+      const validate = signupValidator(req.body);
+      if (!validate)
+        return res.status(203).send({ success: false, message: "InvalidData" });
+
+      //Inserting the data to postgresql
+      const { username, email, phone, password } = req.body;
+      const encryptedPassword = bcrypt.hashSync(password, 10);
+
+      const query = `INSERT INTO users (username, email, phone, password) 
+          VALUES ($1, $2, $3, $4)`;
+      await client.query(query, [username, email, phone, encryptedPassword]);
+
+      res.status(200).send({ success: true });
+    } catch (error: any) {
+      if (error.code === "23505") {
+        return res
+          .status(208)
+          .send({ success: false, message: "Credentials already exists" });
+      }
+    }
+  },
+  deleteUser: async (req: any, res: any) => {
+    try {
+      const { id } = req.params;
+
+      const query = `DELETE FROM users WHERE id= $1`;
+      await client.query(query, [id]);
+
+      res.status(200).send({ success: true });
+    } catch (error) {
+      console.log(error);
+    }
+  },
 };

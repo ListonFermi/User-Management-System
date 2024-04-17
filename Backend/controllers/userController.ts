@@ -29,7 +29,7 @@ export default {
       } catch (error: any) {
         if (error.code === "23505") {
           return res
-            .status(208)
+            .status(403)
             .send({ success: false, message: "Credentials already exists" });
         }
       }

@@ -7,6 +7,7 @@ import AdminLoginPage from "./AdminSide/AdminLoginPage";
 import AdminDashboardPage from "./AdminSide/AdminDashboardPage";
 import ProtectedAdminRoute from "../Components/ProtectedAdminRoute";
 import EditUser from "../Components/EditUser";
+import AddUser from "../Components/AddUser";
 
 function Body() {
   const appRouter = createBrowserRouter([
@@ -45,6 +46,14 @@ function Body() {
       element: (
         <ProtectedAdminRoute>
           <EditUser  />
+        </ProtectedAdminRoute>
+      ),
+    },
+    {
+      path: "/admin/add",
+      element: (
+        <ProtectedAdminRoute>
+          <AddUser  />
         </ProtectedAdminRoute>
       ),
     },

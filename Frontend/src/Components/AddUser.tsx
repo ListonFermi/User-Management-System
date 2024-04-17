@@ -1,40 +1,47 @@
 import { useForm, SubmitHandler } from "react-hook-form";
 import AdminNavbar from "./AdminNavbar";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { BACKEND_URL } from "../Utils/constants";
 import axios from "axios";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 
-function EditUser() {
+function AddUser() {
   type Inputs = {
     username: string;
     email: string;
     phone: string;
+    password: string;
+    confirmPassword: string;
   };
 
   const {
     register,
     handleSubmit,
-    setValue,
+    getValues,
     formState: { errors },
   } = useForm<Inputs>();
 
-  const location = useLocation();
-  const { username, email, phone, id } = location.state || {};
   const navigate = useNavigate();
 
-  useEffect(() => {
-    setValue("username", username);
-    setValue("email", email);
-    setValue("phone", phone);
-  }, []);
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
-      const response = await axios.put(`${BACKEND_URL}/admin/edit/${id}`, data);
+      const response = await axios.post(`${BACKEND_URL}/admin/add`, data);
       if (response.data.success) {
-        navigate(`/admin/dashboard`);
+        toast('New User added successfully', {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce,
+            });
+
+        setTimeout(()=>navigate(`/admin/dashboard`),3000)
+        
       } else {
         toast.error(response.data.message, {
           position: "top-center",
@@ -115,8 +122,38 @@ function EditUser() {
             />
             <p className="text-red-600">{errors.phone?.message}</p>
           </label>
+          <label htmlFor="password">
+          Password:
+          <input
+            type="password"
+            className="border-2 p-2 m-2"
+            {...register("password", {
+              required: "Enter a password",
+              pattern: {
+                value: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}$/,
+                message:
+                  "Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character",
+              },
+            })}
+          />
+          <p className="text-red-600">{errors.password?.message}</p>
+        </label>
+        <label htmlFor="confirmPassword">
+          Confirm Password:
+          <input
+            type="password"
+            className="border-2 p-2 m-2"
+            {...register("confirmPassword", {
+              validate: (value) => {
+                const { password } = getValues();
+                return password === value || "Passwords should match!";
+              },
+            })}
+          />
+          <p className="text-red-600">{errors.confirmPassword?.message}</p>
+        </label>
           <button className="border-2 p-2 m-2" type="submit">
-            Edit User
+            Add User
           </button>
         </form>
       </div>
@@ -124,4 +161,4 @@ function EditUser() {
   );
 }
 
-export default EditUser;
+export default AddUser;

@@ -75,10 +75,10 @@ function UserCard() {
           <div className="p-10 h-[85%] md:w-[45%] w-[90%]">
             <form onSubmit={uploadImage} encType="multipart/form-data">
                 <img
-                aria-required
+
                   width="400px"
                   height="400px"
-                  src={ image? URL.createObjectURL(image) : userData ? `${BACKEND_URL}/images/${userData?.image}` : '/defaultImage.avif' }
+                  src={ image? URL.createObjectURL(image) : userData?.image ? `${BACKEND_URL}/images/${userData?.image}` : `${BACKEND_URL}/images/default.jpg` }
                 />
               <input
                 type="file"
@@ -96,9 +96,9 @@ function UserCard() {
           </div>
           {userData ? (
             <div className="p-10">
-              <h1>Name: {userData.username}</h1>
-              <h1>Email: {userData.email}</h1>
-              <h1>Phone number: {userData.phone}</h1>
+              <h1 className="font-semibold text-3xl my-4">Name: {userData.username}</h1>
+              <h1 className="font-semibold text-3xl my-4">Email: {userData.email}</h1>
+              <h1 className="font-semibold text-3xl my-4">Phone number: {userData.phone}</h1>
             </div>
           ) : (
             "Loading User Data"
