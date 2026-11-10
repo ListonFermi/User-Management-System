@@ -1,0 +1,18 @@
+# Dependabot configuration
+# - Security updates: every open security alert is fixed in ONE grouped PR per directory
+#   (instead of one PR per package).
+# - Version updates are disabled (open-pull-requests-limit: 0); only security fixes are raised.
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directories:
+      - "/Backend"
+      - "/Frontend"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 0
+    groups:
+      npm-security-updates:
+        applies-to: security-updates
+        patterns:
+          - "*"
